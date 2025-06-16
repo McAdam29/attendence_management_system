@@ -17,27 +17,28 @@ use Application\StudentModule\Controller\StudentController;
 |
 */
 
-Route::group([
-    'prefix' => 'user'
-], function () {
-    Route::post('register', [UserController::class,'registerNewUser']);
-    Route::post('login', [UserController::class, 'login']);
-    Route::post('logout', [UserController::class, 'logout'])->middleware('custom_auth'); // Assuming 'custom_auth' is a middleware for authentication
-});
+// Route::group([
+//     'prefix' => 'user'
+// ], function () {
+//     Route::post('register', [UserController::class,'registerNewUser']);
+//     Route::post('login', [UserController::class, 'login']);
+//     Route::post('logout', [UserController::class, 'logout'])->middleware('custom_auth'); // Assuming 'custom_auth' is a middleware for authentication
+// });
 
 
-Route::group([
-    'prefix' => 'students',
-    'middleware' => 'custom_auth'
-], function () {
-    Route::post('add', [StudentController::class,'addStudent']);
-    Route::get('getAll', [StudentController::class, 'getAllStudents']);
-    Route::get('getById/{id}', [StudentController::class, 'getStudentById']);
-    Route::post('update', [StudentController::class, 'updateStudent']);
-    Route::post('delete', [StudentController::class, 'deleteStudent']);
-});
+// Route::group([
+//     'prefix' => 'students',
+//     'middleware' => 'custom_auth'
+// ], function () {
+//     Route::post('add', [StudentController::class,'addStudent']);
+//     Route::get('getAll', [StudentController::class, 'getAllStudents']);
+//     Route::get('getById/{id}', [StudentController::class, 'getStudentById']);
+//     Route::post('update', [StudentController::class, 'updateStudent']);
+//     Route::post('delete', [StudentController::class, 'deleteStudent']);
+// });
 
-Route::group(['prefix' => 'attendence', 'middleware' => 'custom_auth'], function () {
+
+Route::group(['prefix' => 'attendence'], function () {
     Route::post('markBulkAttendence', [AttendenceController::class, 'markBulkAttendence']);
     Route::get('getAllStudentsAttendence', [AttendenceController::class, 'getAllStudentsAttendence']);
    Route::post('markAttendence', [AttendenceController::class, 'markAttendence']);
