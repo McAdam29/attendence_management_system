@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Routing\ResponseFactory as LaravelResponseFactory;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,7 +17,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+       $this->app->singleton(ResponseFactory::class, function ($app) {
+            return new LaravelResponseFactory(
+                $app['Illuminate\Contracts\View\Factory'],
+                $app['Illuminate\Routing\Redirector']
+            );
+        });
+
     }
 
     /**
