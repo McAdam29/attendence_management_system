@@ -29,7 +29,15 @@ class StudentService extends CoreService
      */
     public function createNewStudent(array $data)
     {
-        return $this->studentRepo->create($data);
+        try {
+            // Validate the data
+            if (empty($data['student_name']) || empty($data['department']) || empty($data['enrollment_date'])) {
+                throw new \InvalidArgumentException('Invalid student data provided');
+            }
+            return $this->studentRepo->create($data);
+        } catch (\Exception $e) {
+            throw new \Exception('Error creating student: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -40,7 +48,15 @@ class StudentService extends CoreService
      */
     public function getAllStudents(array $options = [])
     {
-        return $this->studentRepo->getList($options);
+        try {
+            // Validate options if necessary
+            if (!is_array($options)) {
+                throw new \InvalidArgumentException('Options must be an array');
+            }
+            return $this->studentRepo->getAll($options);
+        } catch (\Exception $e) {
+            throw new \Exception('Error fetching students: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -51,7 +67,15 @@ class StudentService extends CoreService
      */
     public function getStudentById(int $id)
     {
-        return $this->studentRepo->getDetailsById($id);
+        try {
+            // Validate ID
+            if (!is_int($id) || $id <= 0) {
+                throw new \InvalidArgumentException('Invalid student ID provided');
+            }
+            return $this->studentRepo->findById($id);
+        } catch (\Exception $e) {
+            throw new \Exception('Error fetching student by ID: ' . $e->getMessage());
+        }
     }
     /**
      * Update a student's details.
@@ -62,11 +86,41 @@ class StudentService extends CoreService
      */
     public function updateStudent(int $id, array $data)
     {
-        $student = $this->getStudentById($id);
-        if (!$student) {
-            throw new \Exception('Student not found');
+        try {
+            // Validate ID and data
+            if (!is_int($id) || $id <= 0) {
+                throw new \InvalidArgumentException('Invalid student ID provided');
+            }
+            if (empty($data['student_name']) || empty($data['department']) || empty($data['enrollment_date'])) {
+                throw new \InvalidArgumentException('Invalid student data provided');
+            }
+            $student = $this->getStudentById($id);
+            if (!$student) {
+                throw new \Exception('Student not found');
+            }
+            return $this->studentRepo->update($id, $data);
+        } catch (\Exception $e) {
+            throw new \Exception('Error updating student: ' . $e->getMessage());
         }
-        return $this->studentRepo->update($id, $data);
+    }
+
+    /**
+     * Delete a student by ID.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function deleteStudent(int $id)
+    {
+        try {
+            $student = $this->getStudentById($id);
+            if (!$student) {
+                throw new \Exception('Student not found');
+            }
+            return $this->studentRepo->delete($id);
+        } catch (\Exception $e) {
+            throw new \Exception('Error deleting student: ' . $e->getMessage());
+        }
     }
 }
 

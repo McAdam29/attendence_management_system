@@ -92,4 +92,63 @@ class StudentController extends CoreController
             return response()->json(['error' => 'Failed to retrieve student'], 500);
         }
     }
+
+    /**
+     * Controller Function to handle HTTP request for updating a student
+     *
+     * @param {Request} $request HTTP request containing student data
+     * @param {int} $id Student ID
+     * @return {JSON} JSON response with student update status
+     */
+    public function updateStudent(Request $request, $id)
+    {
+        try {
+            $getRequestedData = $request->only(['student_name', 'department', 'enrollment_date']);
+            // Validate the request data
+            $validatedData = $request->validate([
+                'student_name' => 'required|string|max:255',
+                'department' => 'required|string|max:255',
+                'enrollment_date' => 'required|string|max:255',
+            ], $this->validationErrorMessages());
+
+            if (!$validatedData) {
+                throw new \InvalidArgumentException($getRequestedData->messages());
+            }
+
+            $studentDetails = [
+                'student_name' => $getRequestedData['student_name'],
+                'department' => $getRequestedData['department'],
+                'enrollment_date' => $getRequestedData['enrollment_date'],
+            ];
+
+            $updatedStudent = $this->studentService->updateStudent($id, $studentDetails);
+            if (!$updatedStudent) {
+                return $this->badRequestResponse('Student update failed', 'Error in updating student data');
+            } else {
+                return $this->successResponse($updatedStudent, 'Student updated successfully');
+            }
+        } catch (\Exception $e) {
+            return $this->badRequestResponse($e->getMessage(), 'Error in request data');
+        }
+    }
+
+    /**
+     * Controller Function to handle HTTP request for deleting a student
+     *
+     * @param {int} $id Student ID
+     * @return {JSON} JSON response with student deletion status
+     */
+    public function deleteStudent($id)
+    {
+        try {
+            $deleted = $this->studentService->deleteStudent($id);
+            if (!$deleted) {
+                return $this->responseNotFound('Student not found or deletion failed');
+            } else {
+                return $this->successResponse(null, 'Student deleted successfully');
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete student'], 500);
+        }
+    }
 }
